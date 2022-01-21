@@ -24,7 +24,7 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
+#include "StartMenu.h"
 
 #define USE_AUDIO_ENGINE 1
 
@@ -109,7 +109,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = utils::createInstance<HelloWorld>();
+    auto scene = utils::createInstance<StartMenu>();
 
     // run
     director->runWithScene(scene);
