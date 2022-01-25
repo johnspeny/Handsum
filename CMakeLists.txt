@@ -72,6 +72,7 @@ list(APPEND GAME_SOURCE
      Classes/StartMenu.cpp
      Classes/GameSprite.cpp
      Classes/Player.cpp
+     Classes/PauseLayer.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -79,6 +80,7 @@ list(APPEND GAME_HEADER
      Classes/StartMenu.h
      Classes/GameSprite.h
      Classes/Player.h
+     Classes/PauseLayer.h
      )
 
 if(ANDROID)

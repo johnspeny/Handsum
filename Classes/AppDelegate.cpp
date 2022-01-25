@@ -77,6 +77,9 @@ bool AppDelegate::applicationDidFinishLaunching()
         director->setOpenGLView(glview);
     }
 
+    //    load assets
+    std::vector<std::string> searchPath;
+
     // turn on display FPS
     director->setDisplayStats(true);
 
@@ -90,21 +93,30 @@ bool AppDelegate::applicationDidFinishLaunching()
     // if the frame's height is larger than the height of medium size.
     if (frameSize.height > mediumResolutionSize.height)
     {
+        searchPath.push_back("hd");
+
         director->setContentScaleFactor(MIN(largeResolutionSize.height / designResolutionSize.height,
                                             largeResolutionSize.width / designResolutionSize.width));
     }
     // if the frame's height is larger than the height of small size.
     else if (frameSize.height > smallResolutionSize.height)
     {
+        searchPath.push_back("sd");
+
         director->setContentScaleFactor(MIN(mediumResolutionSize.height / designResolutionSize.height,
                                             mediumResolutionSize.width / designResolutionSize.width));
     }
     // if the frame's height is smaller than the height of medium size.
     else
     {
+        searchPath.push_back("sd");
+
         director->setContentScaleFactor(MIN(smallResolutionSize.height / designResolutionSize.height,
                                             smallResolutionSize.width / designResolutionSize.width));
     }
+
+    auto fileUtils = FileUtils::getInstance();
+    fileUtils->setSearchPaths(searchPath);
 
     register_all_packages();
 

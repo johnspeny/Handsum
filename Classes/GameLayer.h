@@ -6,13 +6,18 @@
 #define HANDSUM_GAMELAYER_H
 
 #include "cocos2d.h"
+#include "audio/AudioEngine.h"
+#include "ui/CocosGUI.h"
+#include "PauseLayer.h"
 
-USING_NS_CC;
 
 class GameLayer : public cocos2d::Scene {
 public:
     virtual bool init() override;
-    void update();
+
+private:
+    void pauseGame(cocos2d::Ref* sender);
+    PauseLayer* pauseLayer;
 };
 
 

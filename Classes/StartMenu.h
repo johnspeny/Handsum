@@ -6,11 +6,16 @@
 #define HANDSUM_STARTMENU_H
 
 #include "cocos2d.h"
+#include "GameLayer.h"
+#include "audio/AudioEngine.h"
 
-USING_NS_CC;
 
 class StartMenu : public cocos2d::Scene {
-
+private:
+    void playGame(cocos2d::Ref* pSender);
+    void exitGame(cocos2d::Ref* pSender);
+public:
+    virtual bool init() override;
 };
 
 
