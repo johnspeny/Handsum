@@ -18,11 +18,11 @@ bool PauseLayer::init() {
 
 
     auto listener = EventListenerTouchOneByOne::create();
-    listener->setSwallowTouches(true);
+    listener->setSwallowTouches(getSwallowsTouches());
     listener->onTouchBegan = [](Touch* touch, Event* event)->bool{return true;};
     this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
-    setColor(Color3B(255, 0, 0));
+    setColor(Color3B(0, 0, 0));
     setOpacity(128);
 
     return true;
@@ -32,8 +32,7 @@ void PauseLayer::close(cocos2d::Ref *sender) {
     this->removeFromParentAndCleanup(true);
 }
 
-PauseLayer::PauseLayer() {
-    log("hi");
+PauseLayer::PauseLayer() : _swallowsTouches(false) {
 }
 
 PauseLayer::~PauseLayer() {
@@ -60,7 +59,7 @@ PauseLayer *PauseLayer::create(const char* bgImage, cocos2d::Size size) {
 }
 
 bool PauseLayer::onTouchBegan(cocos2d::Touch *touch, cocos2d::Event *event) {
-    return false;
+    return true;
 }
 
 void PauseLayer::onTouchMoved(cocos2d::Touch *touch, cocos2d::Event *event) {
@@ -132,12 +131,17 @@ void PauseLayer::onExit() {
 }
 
 void PauseLayer::resumeGame(cocos2d::Ref *sender) {
-    //Director::getInstance()->resume();
+    Director::getInstance()->resume();
+    this->setVisible(false);
+    this->setSwallowsTouches(false);
+
     //this->removeFromParentAndCleanup(true);
 }
 
 void PauseLayer::quitGame(cocos2d::Ref *sender) {
-    //auto scene = utils::createInstance<GameLayer>();
-    //Director::getInstance()->replaceScene(TransitionFade::create(1, scene));
+    log("quit");
+    this->resumeGame(sender);
+    auto scene = utils::createInstance<StartMenu>();
+    Director::getInstance()->replaceScene(scene);
 }
 

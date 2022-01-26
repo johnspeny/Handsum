@@ -17,7 +17,7 @@ public:
 
 private:
     void pauseGame(cocos2d::Ref* sender);
-    PauseLayer* pauseLayer;
+    //PauseLayer* pauseLayer;
 };
 
 

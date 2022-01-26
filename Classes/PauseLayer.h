@@ -6,6 +6,7 @@
 #define HANDSUM_PAUSELAYER_H
 
 #include "cocos2d.h"
+#include "StartMenu.h"
 
 class PauseLayer : public cocos2d::LayerColor {
 private:
@@ -36,6 +37,7 @@ public:
     void backgroundFinish();
 
     // set and get
+    CC_SYNTHESIZE(bool , _swallowsTouches, SwallowsTouches);
     CC_SYNTHESIZE(cocos2d::Label*, _titleLabel, TitleLabel);
     CC_SYNTHESIZE(cocos2d::Sprite*, _spriteBackGround, SpriteBackGround);
 

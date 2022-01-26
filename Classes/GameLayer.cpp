@@ -21,26 +21,37 @@ bool GameLayer::init() {
     // stop all music
     AudioEngine::stopAll();
 
+    // pause Layer
+    auto pauseLayer = PauseLayer::create("pausemenubg.png", Size(195, 270));
+    pauseLayer->setTitle("Paused");
+    pauseLayer->setVisible(false);
+    this->addChild(pauseLayer, 100);
+
+
     // pause button
     auto pauseButton =  Button::create("pause.png", "pause.png", "pause.png");
-    pauseButton->addTouchEventListener([this](Ref* sender, Widget::TouchEventType type){
+    pauseButton->addTouchEventListener([pauseLayer](Ref* sender, Widget::TouchEventType type){
         switch (type)
         {
             case ui::Widget::TouchEventType::BEGAN:
                 break;
             case ui::Widget::TouchEventType::ENDED:
+                if(!Director::getInstance()->isPaused()){
+                    pauseLayer->setVisible(true);
+                    pauseLayer->setSwallowsTouches(true);
+                    Director::getInstance()->pause();
+                    log("show pop up");
 
-                // add some layer
-                pauseLayer = PauseLayer::create("pausemenubg.png", Size(195, 270));
-                pauseLayer->setTitle("Pause");
-                this->addChild(pauseLayer, 100);
-                //Director::getInstance()->pause();
-               //pauseLayer->close();
+                }
+//                else {
+//                    Director::getInstance()->resume();
+//                    pauseLayer->setVisible(false);
+//                    pauseLayer->setSwallowsTouches(false);
+//                }
 
-                log("button presssed");
 
-                //Director::getInstance()->pause();
-               break;
+
+                break;
 //            default:
 //                break;
         }
@@ -49,6 +60,30 @@ bool GameLayer::init() {
     pauseButton->setPosition(Vec2(origin.x + pauseButton->getContentSize().width, origin.y + visibleSize.height * 0.9f));
     this->addChild(pauseButton);
 
+    // pause Button rework
+//    auto pauseButton = MenuItemImage::create("pause.png","pause.png",[pauseLayer](Ref*sender){
+//
+//        if(!Director::getInstance()->isPaused()){
+//            Director::getInstance()->pause();
+//            pauseLayer->setVisible(true);
+//            pauseLayer->setSwallowsTouches(true);
+//        }
+//        else {
+//            Director::getInstance()->resume();
+//            pauseLayer->setVisible(false);
+//            pauseLayer->setSwallowsTouches(false);
+//        }
+//
+//    log("show pop up");
+//
+//    });
+//
+//
+//    auto buttons = Menu::create(pauseButton,NULL);
+//    addChild(buttons);
+//    buttons->setPosition(Vec2(origin.x + pauseButton->getContentSize().width, origin.y + visibleSize.height * 0.9f));
+
+    // Labels
     auto scoreLabel = Label::createWithTTF("Score: 0", "fonts/Marker Felt.ttf", 30);
     scoreLabel->setPosition(origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.9f);
     this->addChild(scoreLabel);
