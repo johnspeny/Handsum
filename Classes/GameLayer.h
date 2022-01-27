@@ -9,15 +9,19 @@
 #include "audio/AudioEngine.h"
 #include "ui/CocosGUI.h"
 #include "PauseLayer.h"
+#include "Ball.h"
+
 
 
 class GameLayer : public cocos2d::Scene {
 public:
     virtual bool init() override;
+    void update(float dt) override;
 
 private:
-    void pauseGame(cocos2d::Ref* sender);
-    //PauseLayer* pauseLayer;
+    PaperBall* _ball;
+    b2WorldNode* _world;
+
 };
 
 

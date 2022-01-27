@@ -73,6 +73,10 @@ list(APPEND GAME_SOURCE
      Classes/GameSprite.cpp
      Classes/Player.cpp
      Classes/PauseLayer.cpp
+     Classes/b2WorldNode.cpp
+     Classes/Box2dDebugDraw.cpp
+     Classes/GameVars.cpp
+     Classes/Ball.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -81,7 +85,11 @@ list(APPEND GAME_HEADER
      Classes/GameSprite.h
      Classes/Player.h
      Classes/PauseLayer.h
-     )
+     Classes/b2WorldNode.h
+     Classes/Box2dDebugDraw.h
+     Classes/GameVars.h
+     Classes/Ball.h
+    )
 
 if(ANDROID)
     # the APP_NAME should match on AndroidManifest.xml

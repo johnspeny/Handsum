@@ -43,14 +43,6 @@ bool GameLayer::init() {
                     log("show pop up");
 
                 }
-//                else {
-//                    Director::getInstance()->resume();
-//                    pauseLayer->setVisible(false);
-//                    pauseLayer->setSwallowsTouches(false);
-//                }
-
-
-
                 break;
 //            default:
 //                break;
@@ -60,28 +52,6 @@ bool GameLayer::init() {
     pauseButton->setPosition(Vec2(origin.x + pauseButton->getContentSize().width, origin.y + visibleSize.height * 0.9f));
     this->addChild(pauseButton);
 
-    // pause Button rework
-//    auto pauseButton = MenuItemImage::create("pause.png","pause.png",[pauseLayer](Ref*sender){
-//
-//        if(!Director::getInstance()->isPaused()){
-//            Director::getInstance()->pause();
-//            pauseLayer->setVisible(true);
-//            pauseLayer->setSwallowsTouches(true);
-//        }
-//        else {
-//            Director::getInstance()->resume();
-//            pauseLayer->setVisible(false);
-//            pauseLayer->setSwallowsTouches(false);
-//        }
-//
-//    log("show pop up");
-//
-//    });
-//
-//
-//    auto buttons = Menu::create(pauseButton,NULL);
-//    addChild(buttons);
-//    buttons->setPosition(Vec2(origin.x + pauseButton->getContentSize().width, origin.y + visibleSize.height * 0.9f));
 
     // Labels
     auto scoreLabel = Label::createWithTTF("Score: 0", "fonts/Marker Felt.ttf", 30);
@@ -92,9 +62,26 @@ bool GameLayer::init() {
     timeLabel->setPosition(origin.x + visibleSize.width * 0.5f, origin.y + visibleSize.height * 0.9f);
     this->addChild(timeLabel);
 
+    // world of bodies
+    GameVars::initVars();
+    b2Vec2 gravity;
+    gravity.Set(0.0f, 0.0f);
+
+    // create the world
+    _world = b2WorldNode::create(gravity.x, gravity.y, GameVars::metersHeight);
+    this->addChild(_world, -1);
+
+
+    // create Ball
+    _ball = new PaperBall(this, _world);
+
+    this->scheduleUpdate();
+
     return true;
 }
 
-void GameLayer::pauseGame(cocos2d::Ref *sender) {
-    CCLOG("pause game");
+void GameLayer::update(float dt) {
+    // update ball physics
+    _ball->update(dt);
 }
+
