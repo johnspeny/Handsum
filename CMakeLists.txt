@@ -77,6 +77,7 @@ list(APPEND GAME_SOURCE
      Classes/Box2dDebugDraw.cpp
      Classes/GameVars.cpp
      Classes/Ball.cpp
+     Classes/HandPaddle.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -89,6 +90,7 @@ list(APPEND GAME_HEADER
      Classes/Box2dDebugDraw.h
      Classes/GameVars.h
      Classes/Ball.h
+     Classes/HandPaddle.h
     )
 
 if(ANDROID)

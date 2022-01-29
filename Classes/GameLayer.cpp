@@ -13,8 +13,8 @@ bool GameLayer::init() {
     {
         return false;
     }
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    auto origin      = Director::getInstance()->getVisibleOrigin();
+    visibleSize = Director::getInstance()->getVisibleSize();
+    origin      = Director::getInstance()->getVisibleOrigin();
     auto safeArea = Director::getInstance()->getSafeAreaRect();
     auto safeOrigin = safeArea.origin;
 
@@ -52,7 +52,6 @@ bool GameLayer::init() {
     pauseButton->setPosition(Vec2(origin.x + pauseButton->getContentSize().width, origin.y + visibleSize.height * 0.9f));
     this->addChild(pauseButton);
 
-
     // Labels
     auto scoreLabel = Label::createWithTTF("Score: 0", "fonts/Marker Felt.ttf", 30);
     scoreLabel->setPosition(origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.9f);
@@ -69,11 +68,33 @@ bool GameLayer::init() {
 
     // create the world
     _world = b2WorldNode::create(gravity.x, gravity.y, GameVars::metersHeight);
-    this->addChild(_world, -1);
+    this->addChild(_world, -10);
 
+    // create wall
+    createWallBody();
 
     // create Ball
     _ball = new PaperBall(this, _world);
+
+    // left hand
+    _lefthand = new HandPaddle(this, _world, origin.x + visibleSize.width * 0.1f, origin.y + visibleSize.height * 0.25f);
+    _lefthand->getHandSprite()->setTag(0);
+    _handPaddlePool.push_back(_lefthand);
+
+    // right hand
+    _righthand = new HandPaddle(this, _world, origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.25f);
+    _righthand->getHandSprite()->setTag(1);
+    _handPaddlePool.push_back(_righthand);
+
+    // multiple touch events
+    auto listener = EventListenerTouchAllAtOnce::create();
+    listener->onTouchesBegan =
+            CC_CALLBACK_2(GameLayer::onTouchesBegan, this);
+    listener->onTouchesMoved =
+            CC_CALLBACK_2(GameLayer::onTouchesMoved, this);
+    listener->onTouchesEnded =
+            CC_CALLBACK_2(GameLayer::onTouchesEnded, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener,this);
 
     this->scheduleUpdate();
 
@@ -83,5 +104,95 @@ bool GameLayer::init() {
 void GameLayer::update(float dt) {
     // update ball physics
     _ball->update(dt);
+
+    // update handlePaddle physics
+    _lefthand->update(dt);
+    _lefthand->getHandSprite()->setPosition(_lefthand->getNextPosition());
+
+    _righthand->update(dt);
+    _righthand->getHandSprite()->setPosition(_righthand->getNextPosition());
 }
 
+void GameLayer::createWallBody() {
+    b2BodyDef wallDef;
+    wallDef.type = b2_staticBody;
+
+    b2Body* body = _world->getb2World()->CreateBody(&wallDef);
+
+    b2PolygonShape boxShape;
+
+    b2FixtureDef wallFixtureDef;
+    wallFixtureDef.shape = &boxShape;
+
+    // add four walls to the static body
+    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.5f, b2Vec2(origin.x, visibleSize.height / GameVars::PTM_Ratio), 0);
+    body->CreateFixture(&wallFixtureDef);// ceiling
+
+    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.5f, b2Vec2(origin.x, origin.y / GameVars::PTM_Ratio), 0);
+    body->CreateFixture(&wallFixtureDef);// ground
+
+    boxShape.SetAsBox(0.5f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2(origin.x, origin.y / GameVars::PTM_Ratio), 0);
+    body->CreateFixture(&wallFixtureDef);// left wall
+
+    boxShape.SetAsBox(0.5f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2(visibleSize.width / GameVars::PTM_Ratio, origin.y / GameVars::PTM_Ratio), 0);
+    body->CreateFixture(&wallFixtureDef);// right wall
+
+}
+
+void
+GameLayer::onTouchesBegan(const std::vector<cocos2d::Touch *> &touches, cocos2d::Event *event) {
+
+    for( auto touch : touches) {
+        if(touch != nullptr) {
+            auto tap = touch->getLocation();
+            for (auto hand : _handPaddlePool) {
+                Point locationInNode = hand->getHandSprite()->convertToNodeSpace(touch->getLocation());
+                Size s = hand->getHandSprite()->getContentSize();
+                Rect rect = Rect(0, 0, s.width, s.height);
+                if(rect.containsPoint(locationInNode)){
+                    hand->setTouch(touch);
+                    log("touch began");
+                }
+            }
+        }
+    }
+}
+
+void
+GameLayer::onTouchesMoved(const std::vector<cocos2d::Touch *> &touches, cocos2d::Event *event) {
+
+    for( auto touch : touches) {
+        if(touch != nullptr) {
+            auto tap = touch->getLocation();
+            for (auto hand : _handPaddlePool) {
+                Point locationInNode = hand->getHandSprite()->convertToNodeSpace(touch->getLocation());
+                if (hand->getTouch() != nullptr && hand->getTouch() == touch){
+                    log("moved");
+                    Point nextPosition = locationInNode;
+                    hand->setNextPosition(tap);
+                    //hand->getHandbody()->ApplyLinearImpulse(b2Vec2(0, 0), hand->getHandbody()->GetWorldCenter(),true);
+                }
+//                Size s = hand->getHandSprite()->getContentSize();
+//                Rect rect = Rect(0, 0, s.width, s.height);
+//                if(rect.containsPoint(locationInNode)){
+//                    hand->setTouch(touch);
+//                }
+            }
+        }
+    }
+}
+
+void
+GameLayer::onTouchesEnded(const std::vector<cocos2d::Touch *> &touches, cocos2d::Event *event) {
+    for( auto touch : touches) {
+        if(touch != nullptr) {
+            auto tap = touch->getLocation();
+            for (auto hand : _handPaddlePool) {
+                Point locationInNode = hand->getHandSprite()->convertToNodeSpace(touch->getLocation());
+                if (hand->getTouch() != nullptr && hand->getTouch() == touch){
+                    hand->setTouch(nullptr);
+                }
+            }
+        }
+    }
+}
