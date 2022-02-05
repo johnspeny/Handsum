@@ -53,7 +53,8 @@ bool GameLayer::init() {
     this->addChild(pauseButton);
 
     // Labels
-    auto scoreLabel = Label::createWithTTF("Score: 0", "fonts/Marker Felt.ttf", 30);
+    scoreInt = 0;
+    scoreLabel = Label::createWithTTF("0", "fonts/Marker Felt.ttf", 30);
     scoreLabel->setPosition(origin.x + visibleSize.width * 0.9f, origin.y + visibleSize.height * 0.9f);
     this->addChild(scoreLabel);
 
@@ -70,11 +71,23 @@ bool GameLayer::init() {
     _world = b2WorldNode::create(gravity.x, gravity.y, GameVars::metersHeight);
     this->addChild(_world, -10);
 
+
+    // add collision listener
+    _collisionListener = new MyContactListener();
+    _world->getb2World()->SetContactListener(_collisionListener);
+
+
     // create wall
     createWallBody();
 
+    // create a basket
+    _basket = new Basket(this, _world);
+    _basket->getBasketSprite()->setTag(4);
+
     // create Ball
     _ball = new PaperBall(this, _world);
+    _ball->getBallSprite()->setTag(3);
+
 
     // left hand
     _lefthand = new HandPaddle(this, _world, origin.x + visibleSize.width * 0.1f, origin.y + visibleSize.height * 0.25f);
@@ -102,6 +115,9 @@ bool GameLayer::init() {
 }
 
 void GameLayer::update(float dt) {
+    // update basket physics
+    _basket->update(dt);
+
     // update ball physics
     _ball->update(dt);
 
@@ -125,16 +141,16 @@ void GameLayer::createWallBody() {
     wallFixtureDef.shape = &boxShape;
 
     // add four walls to the static body
-    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.5f, b2Vec2(origin.x, visibleSize.height / GameVars::PTM_Ratio), 0);
+    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.1f, b2Vec2(origin.x, (visibleSize.height / GameVars::PTM_Ratio) + (origin.y / GameVars::PTM_Ratio)), 0);
     body->CreateFixture(&wallFixtureDef);// ceiling
 
-    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.5f, b2Vec2(origin.x, origin.y / GameVars::PTM_Ratio), 0);
+    boxShape.SetAsBox(visibleSize.width / GameVars::PTM_Ratio, 0.1f, b2Vec2(origin.x, origin.y / GameVars::PTM_Ratio), 0);
     body->CreateFixture(&wallFixtureDef);// ground
 
-    boxShape.SetAsBox(0.5f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2(origin.x, origin.y / GameVars::PTM_Ratio), 0);
+    boxShape.SetAsBox(0.1f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2((origin.x / GameVars::PTM_Ratio) - (0.1f / GameVars::PTM_Ratio), origin.y / GameVars::PTM_Ratio), 0);
     body->CreateFixture(&wallFixtureDef);// left wall
 
-    boxShape.SetAsBox(0.5f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2(visibleSize.width / GameVars::PTM_Ratio, origin.y / GameVars::PTM_Ratio), 0);
+    boxShape.SetAsBox(0.1f, visibleSize.height / GameVars::PTM_Ratio, b2Vec2(visibleSize.width / GameVars::PTM_Ratio, origin.y / GameVars::PTM_Ratio), 0);
     body->CreateFixture(&wallFixtureDef);// right wall
 
 }
@@ -151,7 +167,7 @@ GameLayer::onTouchesBegan(const std::vector<cocos2d::Touch *> &touches, cocos2d:
                 Rect rect = Rect(0, 0, s.width, s.height);
                 if(rect.containsPoint(locationInNode)){
                     hand->setTouch(touch);
-                    log("touch began");
+                    //log("touch began");
                 }
             }
         }
@@ -167,9 +183,10 @@ GameLayer::onTouchesMoved(const std::vector<cocos2d::Touch *> &touches, cocos2d:
             for (auto hand : _handPaddlePool) {
                 Point locationInNode = hand->getHandSprite()->convertToNodeSpace(touch->getLocation());
                 if (hand->getTouch() != nullptr && hand->getTouch() == touch){
-                    log("moved");
-                    Point nextPosition = locationInNode;
-                    hand->setNextPosition(tap);
+                    //log("moved");
+                    Point nextPosition = tap;
+                    hand->setNextPosition(nextPosition);
+                    hand->getHandbody()->SetLinearVelocity(b2Vec2(tap.x - hand->getHandSprite()->getPositionX(), tap.y - hand->getHandSprite()->getPositionY()));
                     //hand->getHandbody()->ApplyLinearImpulse(b2Vec2(0, 0), hand->getHandbody()->GetWorldCenter(),true);
                 }
 //                Size s = hand->getHandSprite()->getContentSize();

@@ -78,6 +78,8 @@ list(APPEND GAME_SOURCE
      Classes/GameVars.cpp
      Classes/Ball.cpp
      Classes/HandPaddle.cpp
+     Classes/MyContactListener.cpp
+     Classes/Basket.cpp
      )
 list(APPEND GAME_HEADER
      Classes/AppDelegate.h
@@ -91,6 +93,8 @@ list(APPEND GAME_HEADER
      Classes/GameVars.h
      Classes/Ball.h
      Classes/HandPaddle.h
+     Classes/MyContactListener.h
+     Classes/Basket.h
     )
 
 if(ANDROID)

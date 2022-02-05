@@ -48,8 +48,8 @@ void PaperBall::createBallBody(cocos2d::Sprite* new_ballsprite, b2WorldNode *new
     b2FixtureDef ballShapeDef;
     ballShapeDef.shape = &circle;
     ballShapeDef.density = 1.0f;
-    ballShapeDef.friction = 0.f;
-    ballShapeDef.restitution = 1.0f;
+    //ballShapeDef.friction = 0.f;
+    ballShapeDef.restitution = 0.7f;
 
     _ballbody->CreateFixture(&ballShapeDef);
 

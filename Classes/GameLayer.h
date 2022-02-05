@@ -11,6 +11,8 @@
 #include "PauseLayer.h"
 #include "Ball.h"
 #include "HandPaddle.h"
+#include "MyContactListener.h"
+#include "Basket.h"
 
 class GameLayer : public cocos2d::Scene {
 private:
@@ -24,13 +26,16 @@ private:
 public:
     virtual bool init() override;
     void update(float dt) override;
-
+    cocos2d::Label* scoreLabel;
+    int scoreInt;
 private:
     PaperBall* _ball;
+    Basket* _basket;
     HandPaddle* _lefthand;
     HandPaddle* _righthand;
     b2WorldNode* _world;
     void createWallBody();
+    MyContactListener* _collisionListener;
 };
 
 

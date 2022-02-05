@@ -55,13 +55,13 @@ void HandPaddle::createHandBody(cocos2d::Sprite* new_ballsprite, b2WorldNode *ne
     b2FixtureDef ballShapeDef;
     ballShapeDef.shape = &circle;
     ballShapeDef.density = 10.0f;
-    ballShapeDef.friction = 0.4f;
-    ballShapeDef.restitution = 0.1f;
+    //ballShapeDef.friction = 0.4f;
+    ballShapeDef.restitution = 1.0f;
 
     _handbody->CreateFixture(&ballShapeDef);
 
     // add velocity to it
-    //_ballbody->ApplyLinearImpulse(b2Vec2(0, -10), b2Vec2(_ballbody->GetWorldCenter()),true);
+//    _handbody->ApplyLinearImpulse(b2Vec2(0, -10), b2Vec2(_handbody->GetWorldCenter()),true);
 
 }
 
@@ -89,10 +89,10 @@ void HandPaddle::update(float dt) {
         uintptr_t y =_handbody->GetUserData().pointer;
 
         if (x == y) {
-            log("even handle bodies");
-            _handSprite = (Sprite*)body->GetUserData().pointer;
-            _handSprite->setPosition(Vec2(body->GetPosition().x * GameVars::PTM_Ratio, body->GetPosition().y * GameVars::PTM_Ratio));
-            _handSprite->setRotation(-1 * CC_RADIANS_TO_DEGREES(body->GetAngle()));
+            //log("even handle bodies");
+            auto handSprite = (Sprite*)body->GetUserData().pointer;
+            handSprite->setPosition(Vec2(body->GetPosition().x * GameVars::PTM_Ratio, body->GetPosition().y * GameVars::PTM_Ratio));
+            handSprite->setRotation(-1 * CC_RADIANS_TO_DEGREES(body->GetAngle()));
         }
     }
 }
